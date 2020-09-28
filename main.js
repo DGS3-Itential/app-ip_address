@@ -17,6 +17,7 @@ function getFirstIpAddress(cidrStr, callback) {
 
   // Initialize return arguments for callback
   let firstIpAddress = null;
+  let firstIpAddressIPV6 = null;
   let callbackError = null;
 
   // Instantiate an object from the imported class and assign the instance to variable cidr.
@@ -37,12 +38,14 @@ function getFirstIpAddress(cidrStr, callback) {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
     [firstIpAddress] = cidr.toArray(options);
+    let xyz = firstIpAddress;
+    firstIpAddressIPV6 = getIpv4MappedIpv6Address(xyz);
   }
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
   // The IAP convention is to pass returned data as the first argument and error
   // data as the second argument to the callback function.
-  return callback(firstIpAddress, callbackError);
+  return callback(firstIpAddress, firstIpAddressIPV6, callbackError);
 }
 
 /**
@@ -111,13 +114,13 @@ function main() {
     console.log(`\n--- Test Number ${i + 1} getFirstIpAddress(${sampleCidrs[i]}) ---`);
     // Call getFirstIpAddress and pass the test subnet and an anonymous callback function.
     // The callback is using the fat arrow operator: () => { }
-    getFirstIpAddress(sampleCidrs[i], (data, error) => {
+    getFirstIpAddress(sampleCidrs[i], (data1, data2, error) => {
       // Now we are inside the callback function.
       // Display the results on the console.
       if (error) {
         console.error(`  Error returned from GET request: ${error}`);
       }
-      console.log(`  Response returned from GET request: ${data}`);
+      console.log(`  Response returned from GET request- IPV4: ${data1} IPV6: ${data2}`);
     });
   }
   // Iterate over sampleIpv4s and pass the element's value to getIpv4MappedIpv6Address().
